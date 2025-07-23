@@ -1,0 +1,7 @@
+{
+  "name": "appPatnuc",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular-standalone"
+}
