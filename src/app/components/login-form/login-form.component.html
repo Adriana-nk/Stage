@@ -1,0 +1,32 @@
+<form class="login-form" (ngSubmit)="onSubmit()">
+  <div class="header-container">
+    <img src="assets/patnuc-logo.png" alt="" class="footer-logo" />
+    <br />
+    <h1 class="header-title">Bienvenue chers Utilisateurs</h1>
+    <div class="header-subtitle">Veuillez vous connecter afin de continuer</div>
+  </div>
+
+  <label for="email">E-mail</label>
+  <input
+    id="email"
+    type="email"
+    placeholder="Votre adresse mail"
+    [(ngModel)]="email"
+    name="email"
+    required
+  />
+
+  <label for="password">Mot de passe</label>
+  <input
+    id="password"
+    type="password"
+    placeholder="Votre mot de passe"
+    [(ngModel)]="password"
+    name="password"
+    required
+  />
+
+  <a routerLink="/forgot1" class="forgot-password">Mot de passe oublié?</a>
+
+  <button type="submit" class="login-button">Commencer</button>
+</form>

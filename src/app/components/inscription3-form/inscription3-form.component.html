@@ -1,0 +1,60 @@
+<form class="login-form" (ngSubmit)="submit()">
+  <div class="header-container">
+    <h1 class="header-title">Mot de passe</h1>
+    <p class="header-subtitle">Veuillez saisir votre mot de passe</p>
+  </div>
+
+  <!-- Mot de passe -->
+  <label for="password">Mot de passe</label>
+  <div class="input-container">
+    <input
+      id="password"
+      [type]="showPassword ? 'text' : 'password'"
+      placeholder="Votre mot de passe"
+      [(ngModel)]="password"
+      name="password"
+      required
+    />
+    <i
+      class="fas"
+      [ngClass]="showPassword ? 'fa-eye-slash' : 'fa-eye'"
+      (click)="togglePassword()"
+      style="cursor: pointer; margin-left: -30px;"
+    ></i>
+  </div>
+
+  <!-- Confirmation du mot de passe -->
+  <label for="confirmPassword">Confirmation du mot de passe</label>
+  <div class="input-container">
+    <input
+      id="confirmPassword"
+      [type]="showConfirmPassword ? 'text' : 'password'"
+      placeholder="Confirmer le mot de passe"
+      [(ngModel)]="confirmPassword"
+      name="confirmPassword"
+      required
+    />
+    <i
+      class="fas"
+      [ngClass]="showConfirmPassword ? 'fa-eye-slash' : 'fa-eye'"
+      (click)="toggleConfirmPassword()"
+      style="cursor: pointer; margin-left: -30px;"
+    ></i>
+  </div>
+
+  <!-- Conditions -->
+  <div class="checkbox-container">
+    <input
+      type="checkbox"
+      id="confidentialite"
+      [(ngModel)]="acceptedConditions"
+      name="confidentialite"
+      required
+    />
+    <label for="confidentialite">
+      J’accepte les <a href="#">conditions de confidentialité</a>
+    </label>
+  </div>
+
+  <button type="submit" class="login-button">Terminer</button>
+</form>

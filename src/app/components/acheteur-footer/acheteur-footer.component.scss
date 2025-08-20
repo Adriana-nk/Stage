@@ -1,0 +1,43 @@
+.footer-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background: #ffffff;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 8px 0;
+  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.08);
+  border-top-left-radius: 16px;
+  border-top-right-radius: 16px;
+  z-index: 10;
+}
+
+.nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 0.6rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: 0.3s;
+  color: #333; /* Couleur du texte par défaut */
+}
+
+.nav-item img {
+  width: 20px;
+  height: 20px;
+  margin-bottom: 3px;
+  filter: grayscale(100%) brightness(0.5); /* Icône grise par défaut */
+  transition: 0.3s;
+}
+
+.nav-item.active img {
+  filter: none; /* Retire le gris pour afficher la vraie couleur */
+  transform: scale(1.1); /* Petit effet de zoom */
+}
+
+.nav-item.active span {
+  color: #1d4527; /* Texte vert seulement quand actif */
+}

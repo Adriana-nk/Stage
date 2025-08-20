@@ -1,0 +1,83 @@
+.login-form {
+  max-width: 400px;
+  margin: 50% auto 0 auto;
+  padding: 16% 25px;
+  background: #fff;
+  border-radius: 20px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+  font-family: 'Poppins', sans-serif;
+  color: #603813;
+
+  .header-container {
+    text-align: center;
+    margin-bottom: 18px;
+
+    .header-title {
+      font-size: 32px;
+      font-weight: 700;
+      margin: 0 0 8px 0;
+    }
+
+    .header-subtitle {
+      font-size: 18px;
+      font-weight: 400;
+      color: #a67c52;
+    }
+  }
+
+  .otp-inputs {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 24px;
+
+    input {
+      width: 48px;
+      height: 58px;
+      border-radius: 12px;
+      border: 1px solid #ddd;
+      background-color: #f7f7f7;
+      text-align: center;
+      font-size: 1.5rem;
+      font-weight: 600;
+      outline: none;
+      transition: border 0.3s;
+
+      &:focus {
+        border-color: var(--main-color, #1d4931);
+      }
+    }
+  }
+
+  .submit-btn {
+  width: 100%;
+  padding: 14px;
+  background: #8dc46c;
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  font-size: 18px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+  transition: background 0.2s;
+
+  &:hover {
+    background: #6fa84e; // ou une autre couleur manuellement ajustée
+  }
+}
+
+
+  .resend-link {
+    text-align: center;
+    font-size: 14px;
+    margin-top: 12px;
+    color: #603813;
+
+    a {
+      text-decoration: underline;
+      color: #a67c52;
+    }
+  }
+}

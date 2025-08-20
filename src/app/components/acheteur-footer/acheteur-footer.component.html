@@ -1,0 +1,37 @@
+<footer class="footer-nav">
+  <div
+    class="nav-item"
+    [class.active]="activeTab === 'Accueil'"
+    (click)="navigate('Accueil', '/accueil')"
+  >
+    <img src="assets/icon/home.png" alt="Accueil" />
+    <span>Accueil</span>
+  </div>
+
+  <div
+    class="nav-item"
+    [class.active]="activeTab === 'Favoris'"
+    (click)="navigate('Favoris', '/favoris')"
+  >
+    <img src="assets/icon/coeur.png" alt="Favoris" />
+    <span>Favoris</span>
+  </div>
+
+  <div
+    class="nav-item"
+    [class.active]="activeTab === 'Explorer'"
+    (click)="navigate('Explorer', '/explorer')"
+  >
+    <img src="assets/icon/explorer.png" alt="Explorer" />
+    <span>Explorer</span>
+  </div>
+
+  <div
+    class="nav-item"
+    [class.active]="activeTab === 'Compte'"
+    (click)="navigate('Compte', '/compte')"
+  >
+    <img src="assets/icon/compte.png" alt="Compte" />
+    <span>Compte</span>
+  </div>
+</footer>

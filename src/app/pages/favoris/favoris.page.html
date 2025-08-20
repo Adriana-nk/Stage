@@ -1,0 +1,44 @@
+<ion-header class="header-custom">
+  <ion-toolbar>
+    <ion-title class="title-poppins">Mes Favoris</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="favoris-content">
+
+  <!-- SI AUCUN FAVORI -->
+  <div class="empty-state" *ngIf="favoris.length === 0">
+    <img src="assets/icon/empty-favoris.png" alt="Aucun favori" />
+    <p>Vous n’avez encore ajouté aucun produit en favoris.</p>
+  </div>
+
+  <!-- LISTE DES FAVORIS -->
+  <ion-list *ngIf="favoris.length > 0">
+    <ion-item *ngFor="let produit of favoris" class="favori-card">
+
+      <!-- IMAGE + FAV -->
+      <ion-thumbnail slot="start" class="image-thumb">
+        <img [src]="produit.image" [alt]="produit.nom" />
+      </ion-thumbnail>
+
+      <ion-label>
+        <h2 class="title-poppins">{{ produit.nom }}</h2>
+        <p class="prix">{{ produit.prix | number }} FCFA</p>
+        <p class="stock" *ngIf="produit.stock">Stock: {{ produit.stock }}</p>
+      </ion-label>
+
+      <!-- BOUTON RETIRER -->
+      <ion-button
+        fill="clear"
+        color="danger"
+        size="small"
+        slot="end"
+        (click)="retirerFavori(produit)"
+      >
+        <ion-icon name="close-outline"></ion-icon>
+      </ion-button>
+    </ion-item>
+  </ion-list>
+
+</ion-content>
+  <app-acheteur-footer></app-acheteur-footer>

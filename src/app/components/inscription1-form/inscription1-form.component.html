@@ -1,0 +1,53 @@
+<form (ngSubmit)="submit()" class="login-form" #form="ngForm">
+  <div class="header-container">
+    <h1 class="header-title">Informations Générales</h1>
+    <div class="header-subtitle">Veuillez remplir vos informations pour continuer</div>
+  </div>
+
+  <!-- Nom -->
+  <label for="nom">Nom</label>
+  <input id="nom" type="text" placeholder="Votre nom" [(ngModel)]="nom" name="nom" required />
+
+  <!-- Prénom -->
+  <label for="prenom">Prénom</label>
+  <input id="prenom" type="text" placeholder="Votre prénom" [(ngModel)]="prenom" name="prenom" required />
+
+  <!-- Téléphone -->
+  <label for="telephone">Numéro de Téléphone</label>
+  <input id="telephone" type="tel" placeholder="Votre numéro de téléphone" [(ngModel)]="telephone" name="telephone" required />
+
+  <!-- Genre -->
+  <label for="genre">Genre</label>
+  <select id="genre" [(ngModel)]="genre" name="genre" required>
+    <option value="" disabled>Choisissez votre genre</option>
+    <option value="Homme">Homme</option>
+    <option value="Femme">Femme</option>
+  </select>
+
+  <!-- Région (optionnel) -->
+  <label for="region">Région</label>
+  <input id="region" type="text" placeholder="Votre région" [(ngModel)]="region" name="region" />
+
+  <!-- Ville (optionnel) -->
+  <label for="ville">Ville</label>
+  <input id="ville" type="text" placeholder="Votre ville" [(ngModel)]="ville" name="ville" />
+
+  <!-- Profil (menu déroulant) -->
+  <label for="profil">Profil</label>
+  <select id="profil" [(ngModel)]="profil" name="profil" required>
+    <option value="" disabled>Choisissez votre profil</option>
+    <option value="Agriculteur">Agriculteur</option>
+    <option value="Acheteur">Acheteur</option>
+  </select>
+
+  <!-- Email -->
+  <label for="email">Email</label>
+  <input id="email" type="email" placeholder="Votre email" [(ngModel)]="email" name="email" required />
+
+  <!-- Mot de passe -->
+  <label for="password">Mot de passe</label>
+  <input id="password" type="password" placeholder="Votre mot de passe" [(ngModel)]="password" name="password" required minlength="6" />
+
+  <!-- Bouton soumission -->
+  <button type="submit" class="login-button" [disabled]="form.invalid">Soumettre</button>
+</form>
