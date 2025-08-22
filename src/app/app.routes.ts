@@ -58,4 +58,9 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./pages/favoris/favoris.page').then(m => m.FavorisPage),
   },
+  {
+    path: 'panier',
+    loadComponent: () => import('./pages/panier/panier.page').then( m => m.PanierPage)
+  },
 ];
+

@@ -1,0 +1,59 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>Mon panier</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <!-- Barre de recherche -->
+  <div class="search-section">
+    <div class="search-bar">
+      <input type="text" placeholder="Rechercher des produits..." [(ngModel)]="searchTerm" (input)="onSearchInput($event)">
+      <div class="search-icon">
+        <img src="assets/icon/search.png" alt="Acheteur" />
+      </div>
+    </div>
+  </div>
+
+  <!-- Articles du panier -->
+  <div class="cart-content">
+    <div *ngFor="let item of filteredCartItems" class="product-card">
+      <div class="delete-btn" (click)="removeItem(item.id)">
+         <img src="assets/icon/cros.png" alt="Acheteur" />
+      </div>
+
+      <div class="product-image">
+        <img [src]="item.image" [alt]="item.name">
+      </div>
+
+      <div class="product-info">
+        <h3 class="product-name">{{ item.name }}</h3>
+        <p class="product-quantity">Quantité : {{ item.weight }}</p>
+        <div class="product-price">
+          <span class="price">{{ item.price }} Fcfa</span>
+          <span class="price-unit">({{ item.pricePerUnit }} FCFA/{{ item.unit }})</span>
+        </div>
+      </div>
+
+      <div class="quantity-section">
+        <button class="quantity-btn" (click)="decreaseQuantity(item.id)">
+          <img src="assets/icon/minus.png" alt="Acheteur" />
+        </button>
+        <span class="quantity-number">{{ item.quantity }}</span>
+        <button class="quantity-btn" (click)="increaseQuantity(item.id)">
+           <img src="assets/icon/plus.png" alt="Acheteur" />
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Total & Paiement -->
+  <div class="checkout-section">
+    <div class="total-line">
+      <h2>Total : {{ getTotalPrice() }} FCFA</h2>
+    </div>
+    <button class="pay-button" (click)="proceedToPayment()">Payer</button>
+  </div>
+</ion-content>
+
+<app-acheteur-footer></app-acheteur-footer>

@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 
 interface Produit {
   id: number;
@@ -20,19 +21,15 @@ interface Produit {
   styleUrls: ['./acheteur-form.component.scss'],
   imports: [CommonModule, IonicModule, FormsModule]
 })
-export class AcheteurFormComponent {   // ✅ Nom corrigé
-  /** ==== Données ==== */
+export class AcheteurFormComponent {
   searchQuery: string = '';
   produits: Produit[] = [];
   filteredProduits: Produit[] = [];
-
   categories: string[] = ['Tout', 'Fruits', 'Légumes', 'Céréales', 'Racines', 'Légumineuses'];
   selectedCategory: string = 'Tout';
-
   panier: Produit[] = [];
 
-  constructor() {
-    // 🔹 Simule les produits depuis ton backend
+  constructor(private router: Router) {
     this.produits = [
       { id: 1, nom: 'Mais', image: 'assets/mais.png', prix: 500, stock: 12, categorie: 'Fruits' },
       { id: 2, nom: 'Patate Douce', image: 'assets/patate-douce.png', prix: 350, stock: 20, categorie: 'Légumes' },
@@ -44,48 +41,41 @@ export class AcheteurFormComponent {   // ✅ Nom corrigé
     this.filteredProduits = [...this.produits];
   }
 
-  /** ==== Gestion des catégories ==== */
   filterByCategory(categorie: string) {
     this.selectedCategory = categorie;
     this.applyFilters();
   }
 
-  /** ==== Recherche ==== */
   onSearch() {
     this.applyFilters();
   }
 
-  /** ==== Filtrage global ==== */
   private applyFilters() {
     this.filteredProduits = this.produits.filter(p => {
-      const matchesCategory =
-        this.selectedCategory === 'Tout' || p.categorie === this.selectedCategory;
+      const matchesCategory = this.selectedCategory === 'Tout' || p.categorie === this.selectedCategory;
       const matchesSearch = p.nom.toLowerCase().includes(this.searchQuery.toLowerCase());
       return matchesCategory && matchesSearch;
     });
   }
 
-  /** ==== Gestion favoris ==== */
   toggleFavori(produit: Produit) {
     produit.favori = !produit.favori;
   }
 
-  /** ==== Gestion panier ==== */
   ajouterAuPanier(produit: Produit) {
     this.panier.push(produit);
     console.log('Panier:', this.panier);
   }
 
-  /** ==== Navigation fictive ==== */
   goToNotifications() {
     console.log('Naviguer vers Notifications');
   }
 
+  // 🔹 Angular Router pour redirection
   goToCart() {
-    console.log('Naviguer vers Panier');
+    this.router.navigate(['/panier']);
   }
 
-  /** ==== Tout voir ==== */
   onSeeAll() {
     this.selectedCategory = 'Tout';
     this.applyFilters();
