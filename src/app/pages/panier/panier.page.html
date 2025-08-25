@@ -8,47 +8,56 @@
   <!-- Barre de recherche -->
   <div class="search-section">
     <div class="search-bar">
-      <input type="text" placeholder="Rechercher des produits..." [(ngModel)]="searchTerm" (input)="onSearchInput($event)">
+      <input
+        type="text"
+        placeholder="Rechercher des produits..."
+        [(ngModel)]="searchTerm"
+        (input)="onSearchInput($event)"
+      />
       <div class="search-icon">
-        <img src="assets/icon/search.png" alt="Acheteur" />
+        <img src="assets/icon/search.png" alt="Recherche" />
       </div>
     </div>
   </div>
 
   <!-- Articles du panier -->
-  <div class="cart-content">
+  <div class="cart-content" *ngIf="filteredCartItems.length > 0; else emptyCart">
     <div *ngFor="let item of filteredCartItems" class="product-card">
-      <div class="delete-btn" (click)="removeItem(item.id)">
-         <img src="assets/icon/cros.png" alt="Acheteur" />
+      <div class="delete-btn" (click)="confirmRemoveItem(item)">
+         <img src="assets/icon/cros.png" alt="Supprimer" />
       </div>
 
       <div class="product-image">
-        <img [src]="item.image" [alt]="item.name">
+        <img [src]="item.image" [alt]="item.product_name" />
       </div>
 
       <div class="product-info">
-        <h3 class="product-name">{{ item.name }}</h3>
-        <p class="product-quantity">Quantité : {{ item.weight }}</p>
-        <div class="product-price">
-          <span class="price">{{ item.price }} Fcfa</span>
-          <span class="price-unit">({{ item.pricePerUnit }} FCFA/{{ item.unit }})</span>
+        <h3 class="product-name">{{ item.product_name }}</h3>
+        <p class="product-quantity">Quantité : {{ item.quantity }} {{ item.unit || '' }}</p>
+        <div class="product-price" *ngIf="item.price && item.price > 0">
+          <span class="price">{{ item.price }} FCFA</span>
+          <span class="price-unit">({{ item.price / item.quantity | number:'1.0-0' }} FCFA/{{ item.unit || 'unité' }})</span>
         </div>
       </div>
 
       <div class="quantity-section">
-        <button class="quantity-btn" (click)="decreaseQuantity(item.id)">
-          <img src="assets/icon/minus.png" alt="Acheteur" />
+        <button class="quantity-btn" (click)="decreaseQuantity(item)">
+          <img src="assets/icon/minus.png" alt="Minus" />
         </button>
         <span class="quantity-number">{{ item.quantity }}</span>
-        <button class="quantity-btn" (click)="increaseQuantity(item.id)">
-           <img src="assets/icon/plus.png" alt="Acheteur" />
+        <button class="quantity-btn" (click)="increaseQuantity(item)">
+           <img src="assets/icon/plus.png" alt="Plus" />
         </button>
       </div>
     </div>
   </div>
 
+  <ng-template #emptyCart>
+    <p style="text-align: center; margin-top: 2rem;">Votre panier est vide.</p>
+  </ng-template>
+
   <!-- Total & Paiement -->
-  <div class="checkout-section">
+  <div class="checkout-section" *ngIf="cartItems.length > 0">
     <div class="total-line">
       <h2>Total : {{ getTotalPrice() }} FCFA</h2>
     </div>

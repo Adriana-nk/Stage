@@ -16,24 +16,26 @@
   <ion-list *ngIf="favoris.length > 0">
     <ion-item *ngFor="let produit of favoris" class="favori-card">
 
-      <!-- IMAGE + FAV -->
+      <!-- IMAGE -->
       <ion-thumbnail slot="start" class="image-thumb">
-        <img [src]="produit.image" [alt]="produit.nom" />
+        <img [src]="produit.image" [alt]="produit.name" />
       </ion-thumbnail>
 
+      <!-- INFOS PRODUIT -->
       <ion-label>
-        <h2 class="title-poppins">{{ produit.nom }}</h2>
-        <p class="prix">{{ produit.prix | number }} FCFA</p>
+        <h2 class="title-poppins">{{ produit.name }}</h2>
+        <p class="prix">{{ produit.price | number }} FCFA</p>
+        <!-- Si tu veux afficher le stock, ajoute le champ "stock" dans l'interface Produit -->
         <p class="stock" *ngIf="produit.stock">Stock: {{ produit.stock }}</p>
       </ion-label>
 
-      <!-- BOUTON RETIRER -->
+      <!-- BOUTON RETIRER DES FAVORIS -->
       <ion-button
         fill="clear"
         color="danger"
         size="small"
         slot="end"
-        (click)="retirerFavori(produit)"
+        (click)="removeFavoris(produit)"
       >
         <ion-icon name="close-outline"></ion-icon>
       </ion-button>
@@ -41,4 +43,5 @@
   </ion-list>
 
 </ion-content>
-  <app-acheteur-footer></app-acheteur-footer>
+
+<app-acheteur-footer></app-acheteur-footer>
