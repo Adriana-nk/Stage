@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">appPatnuc</string>
+    <string name="title_activity_main">appPatnuc</string>
+    <string name="package_name">com.patnucc.cm</string>
+    <string name="custom_url_scheme">com.patnucc.cm</string>
+</resources>

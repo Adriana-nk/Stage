@@ -2,47 +2,56 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
-export interface Produit {
-  id?: number;
+export interface Produit {  // 🔹 Assure-toi que c'est exporté
+  id: number;
   nom: string;
-  description?: string;
-  image_url?: string;
+  description: string;
   prix: number;
-  stock?: number;
-  categorie?: string;
+  stock: number;
   favori?: boolean;
+  categorie: string;
+  image_url: string;
+}
+
+export interface ApiResponse<T> {
+  code: number;
+  message: string;
+  data: T;
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
-export class ProductService {
-  private baseUrl = 'http://127.0.0.1:8000/api/products';
+export class ProductService {  // 🔹 Assure-toi que c'est exporté
+  private apiUrl = 'http://127.0.0.1:8000/api';
 
   constructor(private http: HttpClient) {}
 
-  // Récupérer tous les produits
-  getProducts(): Observable<any> {
-    return this.http.get<any>(this.baseUrl);
+  getAllProducts(): Observable<ApiResponse<Produit[]>> {
+    return this.http.get<ApiResponse<Produit[]>>(`${this.apiUrl}/products`);
   }
 
-  // Récupérer un produit par ID
-  getProduct(id: number): Observable<any> {
-    return this.http.get<any>(`${this.baseUrl}/${id}`);
+  getProduct(id: number): Observable<ApiResponse<Produit>> {
+    return this.http.get<ApiResponse<Produit>>(`${this.apiUrl}/products/${id}`);
   }
 
-  // Créer un produit
-  createProduct(produit: Produit): Observable<any> {
-    return this.http.post<any>(this.baseUrl, produit);
+  createProduct(product: Produit): Observable<ApiResponse<Produit>> {
+    return this.http.post<ApiResponse<Produit>>(`${this.apiUrl}/products`, product);
   }
 
-  // Mettre à jour un produit
-  updateProduct(id: number, produit: Produit): Observable<any> {
-    return this.http.put<any>(`${this.baseUrl}/${id}`, produit);
+  updateProduct(id: number, product: Partial<Produit>): Observable<ApiResponse<Produit>> {
+    return this.http.put<ApiResponse<Produit>>(`${this.apiUrl}/products/${id}`, product);
   }
 
-  // Supprimer un produit
-  deleteProduct(id: number): Observable<any> {
-    return this.http.delete<any>(`${this.baseUrl}/${id}`);
+  deleteProduct(id: number): Observable<ApiResponse<null>> {
+    return this.http.delete<ApiResponse<null>>(`${this.apiUrl}/products/${id}`);
+  }
+
+  toggleFavorite(productId: number): Observable<ApiResponse<null>> {
+    return this.http.post<ApiResponse<null>>(`${this.apiUrl}/favorites/toggle`, { product_id: productId });
+  }
+
+  getFavorites(): Observable<ApiResponse<Produit[]>> {
+    return this.http.get<ApiResponse<Produit[]>>(`${this.apiUrl}/favorites`);
   }
 }

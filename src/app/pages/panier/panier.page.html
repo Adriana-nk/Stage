@@ -5,7 +5,6 @@
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <!-- Barre de recherche -->
   <div class="search-section">
     <div class="search-bar">
       <input
@@ -20,7 +19,6 @@
     </div>
   </div>
 
-  <!-- Articles du panier -->
   <div class="cart-content" *ngIf="filteredCartItems.length > 0; else emptyCart">
     <div *ngFor="let item of filteredCartItems" class="product-card">
       <div class="delete-btn" (click)="confirmRemoveItem(item)">
@@ -56,7 +54,6 @@
     <p style="text-align: center; margin-top: 2rem;">Votre panier est vide.</p>
   </ng-template>
 
-  <!-- Total & Paiement -->
   <div class="checkout-section" *ngIf="cartItems.length > 0">
     <div class="total-line">
       <h2>Total : {{ getTotalPrice() }} FCFA</h2>

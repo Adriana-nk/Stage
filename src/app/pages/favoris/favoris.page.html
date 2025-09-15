@@ -18,27 +18,30 @@
 
       <!-- IMAGE -->
       <ion-thumbnail slot="start" class="image-thumb">
-        <img [src]="produit.image" [alt]="produit.name" />
+        <img [src]="produit.image_url" [alt]="produit.nom" />
       </ion-thumbnail>
 
       <!-- INFOS PRODUIT -->
       <ion-label>
-        <h2 class="title-poppins">{{ produit.name }}</h2>
-        <p class="prix">{{ produit.price | number }} FCFA</p>
-        <!-- Si tu veux afficher le stock, ajoute le champ "stock" dans l'interface Produit -->
+        <h2 class="title-poppins">{{ produit.nom }}</h2>
+        <p class="prix">{{ produit.prix | number }} FCFA</p>
         <p class="stock" *ngIf="produit.stock">Stock: {{ produit.stock }}</p>
       </ion-label>
 
-      <!-- BOUTON RETIRER DES FAVORIS -->
-      <ion-button
-        fill="clear"
-        color="danger"
-        size="small"
-        slot="end"
-        (click)="removeFavoris(produit)"
-      >
-        <ion-icon name="close-outline"></ion-icon>
-      </ion-button>
+      <!-- COEUR POUR AJOUTER OU RETIRER DES FAVORIS -->
+<ion-button
+  fill="clear"
+  color="danger"
+  size="small"
+  slot="end"
+  (click)="toggleFavoris(produit)"
+>
+  <i [class]="produit.favori ? 'fas fa-heart' : 'far fa-heart'" 
+     style="font-size: 24px; color: red;"></i>
+</ion-button>
+
+
+
     </ion-item>
   </ion-list>
 

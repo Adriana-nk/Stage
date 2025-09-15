@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonicModule, ToastController, NavController } from '@ionic/angular';
-import { Inscription1FormService } from './Service/inscription1.service';
+import { AuthService } from '../../pages/login/Service/auth.service';
 
 @Component({
   selector: 'app-inscription1-form',
@@ -12,23 +12,28 @@ import { Inscription1FormService } from './Service/inscription1.service';
   styleUrls: ['./inscription1-form.component.scss']
 })
 export class Inscription1FormComponent {
-  nom: string = '';
-  prenom: string = '';
-  telephone: string = '';
-  genre: string = '';
-  region?: string;
-  ville?: string;
-  profil?: string;
-  email?: string;
-  password: string = '';
+  nom = '';
+  prenom = '';
+  telephone = '';
+  genre = '';
+  region = '';
+  ville = '';
+  profil = '';
+  email = '';
+  password = '';
 
   constructor(
-    private inscriptionService: Inscription1FormService,
+    private authService: AuthService,
     private toastController: ToastController,
     private navCtrl: NavController
   ) {}
 
-  submit() {
+  async submit() {
+    if (!this.email || !this.password) {
+      await this.showToast('Email et mot de passe sont requis', 'danger');
+      return;
+    }
+
     const data = {
       nom: this.nom,
       prenom: this.prenom,
@@ -41,50 +46,37 @@ export class Inscription1FormComponent {
       password: this.password
     };
 
-    this.inscriptionService.register(data).subscribe({
-      next: async (res) => {
-        // ✅ Vérifie que l'inscription a bien réussi
-        if (res.success) {
-          const toast = await this.toastController.create({
-            message: 'Inscription réussie ! Veuillez vous connecter.',
-            duration: 2000,
-            color: 'success', // ✅ Couleur verte
-            position: 'top'
-          });
-          await toast.present();
-
-          // ✅ Redirection vers login
+    this.authService.register(data).subscribe({
+      next: async (res: any) => {
+        if (res.data) {
+          await this.showToast('Inscription réussie ! Veuillez vous connecter.', 'success');
           this.navCtrl.navigateRoot('/login');
         } else {
           let errorMsg = res.message || 'Erreur lors de l\'inscription';
-          if (res.errors && typeof res.errors === 'object') {
-            const allErrors = ([] as string[]).concat(...Object.values(res.errors));
+          if (res.errors) {
+            const allErrors: string[] = [];
+            Object.keys(res.errors).forEach(key => {
+              allErrors.push(...(res.errors[key] as string[]));
+            });
             errorMsg = allErrors.join(' \n ');
           }
-          const toast = await this.toastController.create({
-            message: errorMsg,
-            duration: 4000,
-            color: 'danger', // Couleur rouge pour erreur
-            position: 'top'
-          });
-          await toast.present();
+          await this.showToast(errorMsg, 'danger');
         }
       },
       error: async (err) => {
-        let errorMsg = 'Erreur réseau ou serveur';
-        if (err.error && err.error.message) {
-          errorMsg = err.error.message;
-        } else if (err.message) {
-          errorMsg = err.message;
-        }
-        const toast = await this.toastController.create({
-          message: errorMsg,
-          duration: 4000,
-          color: 'danger',
-          position: 'top'
-        });
-        await toast.present();
+        const errorMsg = err.error?.message || err.message || 'Erreur réseau ou serveur';
+        await this.showToast(errorMsg, 'danger');
       }
     });
+  }
+
+  private async showToast(message: string, color: string) {
+    const toast = await this.toastController.create({
+      message,
+      duration: 4000,
+      color,
+      position: 'top'
+    });
+    toast.present();
   }
 }

@@ -3,16 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonicModule, AlertController, ToastController } from '@ionic/angular';
 import { AcheteurFooterComponent } from 'src/app/components/acheteur-footer/acheteur-footer.component';
-import { PanierService } from 'src/app/pages/panier/services/panier.service';
-
-export interface CartItem {
-  product_id: number;
-  product_name?: string; // 🔹 rendu optionnel
-  quantity: number;
-  price?: number;
-  unit?: string;
-  image?: string;
-}
+import { PanierService, CartItem, ResponseType } from './service/panier';
 
 @Component({
   selector: 'app-panier',
@@ -22,10 +13,9 @@ export interface CartItem {
   imports: [CommonModule, FormsModule, IonicModule, AcheteurFooterComponent]
 })
 export class PanierPage implements OnInit {
-  searchTerm: string = '';
+  searchTerm = '';
   cartItems: CartItem[] = [];
   filteredCartItems: CartItem[] = [];
-  userId: number = 1; // Remplacer par l'ID de l'utilisateur connecté
 
   constructor(
     private panierService: PanierService,
@@ -38,12 +28,18 @@ export class PanierPage implements OnInit {
   }
 
   loadCart() {
-    this.panierService.getCart(this.userId).subscribe({
-      next: (items) => {
-        this.cartItems = items;
+    this.panierService.getCart().subscribe({
+      next: (res: ResponseType<CartItem[]>) => {
+        if(res.code === 200 && Array.isArray(res.data)) {
+          this.cartItems = res.data;
+        } else {
+          this.cartItems = [];
+        }
         this.updateFilteredItems();
       },
       error: async () => {
+        this.cartItems = [];
+        this.updateFilteredItems();
         const toast = await this.toastController.create({
           message: 'Erreur lors du chargement du panier',
           duration: 2000,
@@ -64,26 +60,17 @@ export class PanierPage implements OnInit {
   }
 
   decreaseQuantity(item: CartItem) {
-    if (item.quantity > 1) {
-      this.updateQuantity(item, item.quantity - 1);
-    } else {
-      this.confirmRemoveItem(item);
-    }
+    if (item.quantity > 1) this.updateQuantity(item, item.quantity - 1);
+    else this.confirmRemoveItem(item);
   }
 
   private updateQuantity(item: CartItem, quantity: number) {
-    this.panierService.updateQuantity(this.userId, item.product_id, quantity).subscribe({
-      next: () => {
-        item.quantity = quantity;
-        this.updateFilteredItems();
-      },
-      error: async () => {
-        const toast = await this.toastController.create({
-          message: 'Impossible de mettre à jour la quantité',
-          duration: 2000,
-          color: 'danger'
-        });
-        await toast.present();
+    this.panierService.updateQuantity(item.product_id, quantity).subscribe({
+      next: (res: ResponseType<CartItem[]>) => {
+        if(res.code === 200 && Array.isArray(res.data)) {
+          this.cartItems = res.data;
+          this.updateFilteredItems();
+        }
       }
     });
   }
@@ -91,7 +78,7 @@ export class PanierPage implements OnInit {
   async confirmRemoveItem(item: CartItem) {
     const alert = await this.alertController.create({
       header: 'Supprimer l\'article',
-      message: `Voulez-vous vraiment supprimer "${item.product_name}" du panier ?`,
+      message: `Voulez-vous supprimer "${item.product_name}" du panier ?`,
       buttons: [
         { text: 'Annuler', role: 'cancel' },
         { text: 'Supprimer', role: 'destructive', handler: () => this.removeItem(item) }
@@ -101,24 +88,12 @@ export class PanierPage implements OnInit {
   }
 
   removeItem(item: CartItem) {
-    this.panierService.removeFromCart(this.userId, item.product_id).subscribe({
-      next: async () => {
-        this.cartItems = this.cartItems.filter(it => it.product_id !== item.product_id);
-        this.updateFilteredItems();
-        const toast = await this.toastController.create({
-          message: `${item.product_name} supprimé du panier`,
-          duration: 2000,
-          color: 'success'
-        });
-        await toast.present();
-      },
-      error: async () => {
-        const toast = await this.toastController.create({
-          message: 'Impossible de supprimer le produit',
-          duration: 2000,
-          color: 'danger'
-        });
-        await toast.present();
+    this.panierService.removeFromCart(item.product_id).subscribe({
+      next: (res: ResponseType<CartItem[]>) => {
+        if(res.code === 200 && Array.isArray(res.data)) {
+          this.cartItems = res.data;
+          this.updateFilteredItems();
+        }
       }
     });
   }
@@ -134,19 +109,10 @@ export class PanierPage implements OnInit {
   }
 
   async proceedToPayment() {
-    if (this.cartItems.length === 0) {
-      const toast = await this.toastController.create({
-        message: 'Votre panier est vide',
-        duration: 2000,
-        color: 'warning'
-      });
-      await toast.present();
-      return;
-    }
-
+    if (this.cartItems.length === 0) return;
     const alert = await this.alertController.create({
       header: 'Procéder au paiement',
-      message: `Total à payer : ${this.getTotalPrice()} FCFA`,
+      message: `Total : ${this.getTotalPrice()} FCFA`,
       buttons: [
         { text: 'Annuler', role: 'cancel' },
         { text: 'Confirmer', handler: () => this.processPayment() }
@@ -174,9 +140,5 @@ export class PanierPage implements OnInit {
       this.cartItems = [];
       this.filteredCartItems = [];
     }, 1500);
-  }
-
-  navigateToTab(tab: string) {
-    console.log(`Navigation vers l'onglet: ${tab}`);
   }
 }

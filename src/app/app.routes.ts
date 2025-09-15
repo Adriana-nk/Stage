@@ -1,4 +1,6 @@
 import { Routes } from '@angular/router';
+import { IsAuthenticateGuard } from './shared/guards/isAuth.guard';
+import { IsGuestGuard } from './shared/guards/isGuest.guard';
 
 export const routes: Routes = [
   // Redirection par défaut vers login
@@ -13,6 +15,7 @@ export const routes: Routes = [
     path: 'login',
     loadComponent: () =>
       import('./pages/login/login.page').then(m => m.LoginPage),
+    canActivate: [IsGuestGuard],
   },
   {
     path: 'inscription',
@@ -47,20 +50,29 @@ export const routes: Routes = [
       import('./pages/forgot2/forgot2.page').then(m => m.Forgot2Page),
   },
 
-  // Pages acheteur
+  // Pages acheteur protégées par le guard
   {
     path: 'acheteur',
+    canActivate: [IsAuthenticateGuard],
     loadComponent: () =>
       import('./pages/acheteur/acheteur.page').then(m => m.AcheteurPage),
   },
   {
     path: 'favoris',
+    canActivate: [IsAuthenticateGuard],
     loadComponent: () =>
       import('./pages/favoris/favoris.page').then(m => m.FavorisPage),
   },
   {
     path: 'panier',
-    loadComponent: () => import('./pages/panier/panier.page').then( m => m.PanierPage)
+    canActivate: [IsAuthenticateGuard],
+    loadComponent: () =>
+      import('./pages/panier/panier.page').then(m => m.PanierPage),
+  },
+  {
+    path: 'compte',
+    canActivate: [IsAuthenticateGuard],
+    loadComponent: () =>
+      import('./pages/compte/compte.page').then(m => m.ComptePage),
   },
 ];
-

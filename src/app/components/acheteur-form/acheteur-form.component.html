@@ -1,4 +1,4 @@
-<ion-header>
+<ion-header> 
   <ion-toolbar class="toolbar-custom">
     <div class="icon-container">
       <div class="notification-icon" (click)="goToNotifications()">
@@ -23,21 +23,20 @@
 
 <!-- Barre de recherche -->
 <div class="search-card">
-  <ion-input
-    placeholder="Rechercher des produits..."
-    [(ngModel)]="searchQuery"
-    clearInput
-    class="search-input"
-    type="search"
-    debounce="300"
-    autocomplete="off"
-  ></ion-input>
+  <ion-input placeholder="Rechercher des produits..."
+             [(ngModel)]="searchQuery"
+             clearInput
+             class="search-input"
+             type="search"
+             debounce="300"
+             autocomplete="off">
+  </ion-input>
   <button class="btn-search" aria-label="Rechercher" (click)="onSearch()">
     <img src="assets/icon/search.png" alt="Recherche" class="custom-icon" />
   </button>
 </div>
 
-<!-- Section catégories -->
+<!-- Catégories -->
 <section class="categories-section">
   <div class="categories-header">
     <h2>Catégories</h2>
@@ -45,49 +44,36 @@
   </div>
 
   <div class="categories-scroll">
-    <button
-      class="category-button"
-      [class.selected]="selectedCategory === cat"
-      *ngFor="let cat of categories"
-      (click)="filterByCategory(cat)"
-    >
+    <button class="category-button"
+            [class.selected]="selectedCategory === cat"
+            *ngFor="let cat of categories"
+            (click)="filterByCategory(cat)">
       {{ cat }}
     </button>
   </div>
 </section>
 
-<!-- Section produits -->
+<!-- Produits -->
 <section class="produits-section">
   <div class="produits-grid">
     <div class="produit-card" *ngFor="let produit of filteredProduits">
-
-      <!-- Image + favoris -->
       <div class="image-container">
         <img [src]="produit.image_url" alt="{{ produit.nom }}" />
 
-        <div
-          class="fav-icon"
-          [class.fav-selected]="produit.favori"
-          (click)="toggleFavori(produit)"
-        >
-          <img
-            [src]="produit.favori ? 'assets/icon/like.png' : 'assets/icon/like.png'"
-            alt="Favori"
-            class="custom-icon"
-          />
-        </div>
+        <!-- Bouton Favoris avec Font Awesome -->
+        <button class="btn-fav" (click)="toggleFavorite(produit.id)">
+          <i class="{{ isFavorite(produit.id) ? 'fas fa-heart' : 'far fa-heart' }}" style="color: red;"></i>
+        </button>
       </div>
 
-      <!-- Détails produit -->
       <div class="details">
         <h3>{{ produit.nom }}</h3>
         <p *ngIf="produit.stock">Stock : {{ produit.stock }}kg</p>
         <p class="prix">{{ produit.prix | number }} FCFA/kg</p>
       </div>
 
-      <!-- Bouton panier -->
-      <button class="btn-panier" (click)="ajouterAuPanier(produit)">
-        <img src="assets/icon/panier.png" alt="Panier" class="custom-icon" />
+      <button (click)="addToCart(produit)">
+        <img src="assets/icon/panier.png" alt="Panier" />
       </button>
     </div>
   </div>

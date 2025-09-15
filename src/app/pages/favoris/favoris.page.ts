@@ -1,7 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IonicModule, AlertController, ToastController } from '@ionic/angular';
-import { FavorisService, Produit } from 'src/app/pages/favoris/Service/favoris.service';
+import { IonicModule, ToastController } from '@ionic/angular';
+import { firstValueFrom } from 'rxjs';
+import { FavorisService } from './service/favoris';
+import { Produit } from 'src/app/services/product.service';
 import { AcheteurFooterComponent } from 'src/app/components/acheteur-footer/acheteur-footer.component';
 
 @Component({
@@ -13,74 +15,48 @@ import { AcheteurFooterComponent } from 'src/app/components/acheteur-footer/ache
 })
 export class FavorisPage implements OnInit {
   favoris: Produit[] = [];
-  userId: number = 1; // Remplace par l'ID de l'utilisateur connecté
 
   constructor(
     private favorisService: FavorisService,
-    private alertController: AlertController,
-    private toastController: ToastController
-  ) {}
+    private toastCtrl: ToastController
+  ) { }
 
   ngOnInit() {
     this.loadFavoris();
   }
 
-  /**
-   * Charger les favoris depuis le back-end
-   */
-  loadFavoris() {
-    this.favorisService.getFavoris(this.userId).subscribe({
-      next: (data: Produit[]) => {
-        this.favoris = data;
-      },
-      error: async () => {
-        const toast = await this.toastController.create({
-          message: 'Erreur lors du chargement des favoris',
-          duration: 2000,
-          color: 'danger'
-        });
-        await toast.present();
-      }
-    });
+  async loadFavoris() {
+  try {
+    const favs = await firstValueFrom(this.favorisService.getFavorites());
+    this.favoris = favs.map(p => ({ ...p, favori: true }));
+    console.log(this.favoris); // vérifier que favori = true pour chaque produit
+  } catch (error: any) {
+    console.error('Erreur lors du chargement des favoris', error.error?.message || error);
+    this.showToast('Impossible de charger les favoris', 'danger');
+  }
+}
+
+  async removeFavoris(produit: Produit) {
+    try {
+      await firstValueFrom(this.favorisService.toggleFavorite(produit.id));
+      this.favoris = this.favoris.filter(p => p.id !== produit.id);
+      this.showToast(`${produit.nom} a été retiré des favoris`, 'success');
+    } catch (error: any) {
+      console.error('Erreur lors de la suppression du favori', error.error?.message || error);
+      this.showToast('Impossible de retirer le produit des favoris', 'danger');
+    }
   }
 
-  /**
-   * Confirmer la suppression d’un favori
-   */
-  async confirmRemoveFavoris(item: Produit) {
-    const alert = await this.alertController.create({
-      header: 'Supprimer le favori',
-      message: `Voulez-vous vraiment retirer "${item.name}" de vos favoris ?`,
-      buttons: [
-        { text: 'Annuler', role: 'cancel' },
-        { text: 'Supprimer', role: 'destructive', handler: () => this.removeFavoris(item) }
-      ]
+  private async showToast(message: string, color: 'success' | 'danger') {
+    const toast = await this.toastCtrl.create({
+      message,
+      color,
+      duration: 2000,
+      position: 'top'
     });
-    await alert.present();
+    toast.present();
+  } toggleFavoris(produit: Produit) {
+    this.removeFavoris(produit);
   }
 
-  /**
-   * Supprimer un favori
-   */
-  removeFavoris(item: Produit) {
-    this.favorisService.removeFromFavoris(this.userId, item.id).subscribe({
-      next: async () => {
-        this.favoris = this.favoris.filter(f => f.id !== item.id);
-        const toast = await this.toastController.create({
-          message: `${item.name} supprimé des favoris`,
-          duration: 2000,
-          color: 'success'
-        });
-        await toast.present();
-      },
-      error: async () => {
-        const toast = await this.toastController.create({
-          message: 'Impossible de supprimer le favori',
-          duration: 2000,
-          color: 'danger'
-        });
-        await toast.present();
-      }
-    });
-  }
 }

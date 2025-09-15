@@ -1,0 +1,69 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Mon Compte</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <!-- PHOTO PROFIL -->
+  <div class="profile-container" (click)="changeProfilePhoto()">
+    <img *ngIf="userProfile.photo" [src]="userProfile.photo" class="profile-photo" />
+    <ion-icon *ngIf="!userProfile.photo" name="camera" class="profile-placeholder"></ion-icon>
+    <p>Cliquer pour changer</p>
+  </div>
+
+  <!-- INFOS UTILISATEUR -->
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>Informations personnelles</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-item button (click)="editField('nom')">
+        <ion-label position="stacked">Nom</ion-label>
+        <ion-text>{{ userProfile.nom }}</ion-text>
+      </ion-item>
+      <ion-item button (click)="editField('prenom')">
+        <ion-label position="stacked">Prénom</ion-label>
+        <ion-text>{{ userProfile.prenom }}</ion-text>
+      </ion-item>
+      <ion-item button (click)="editField('email')">
+        <ion-label position="stacked">Email</ion-label>
+        <ion-text>{{ userProfile.email }}</ion-text>
+      </ion-item>
+      <ion-item button (click)="editField('telephone')">
+        <ion-label position="stacked">Téléphone</ion-label>
+        <ion-text>{{ userProfile.telephone }}</ion-text>
+      </ion-item>
+      <ion-item button (click)="editField('adresse')">
+        <ion-label position="stacked">Adresse</ion-label>
+        <ion-text>{{ userProfile.adresse }}</ion-text>
+      </ion-item>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- PARAMÈTRES -->
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>Paramètres</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-item>
+        <ion-label>Notifications</ion-label>
+        <ion-toggle [(ngModel)]="appSettings.notifications" (ionChange)="updateSetting('notifications', $event)"></ion-toggle>
+      </ion-item>
+      <ion-item>
+        <ion-label>Mode sombre</ion-label>
+        <ion-toggle [(ngModel)]="appSettings.darkMode" (ionChange)="updateSetting('darkMode', $event)"></ion-toggle>
+      </ion-item>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- ACTIONS -->
+  <ion-list>
+    <ion-item button (click)="changePassword()">Changer mot de passe</ion-item>
+    <ion-item button (click)="viewOrderHistory()">Historique commandes</ion-item>
+    <ion-item button color="danger" (click)="logout()">Déconnexion</ion-item>
+  </ion-list>
+</ion-content>
+
+<app-acheteur-footer></app-acheteur-footer>
