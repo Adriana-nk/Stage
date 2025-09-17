@@ -5,6 +5,7 @@ import { IonicModule, ToastController } from '@ionic/angular';
 import { Router } from '@angular/router';
 import { ProductService, Produit } from '../../services/product.service';
 import { PanierService } from '../../pages/panier/service/panier';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-acheteur-form',
@@ -149,4 +150,15 @@ export class AcheteurFormComponent implements OnInit {
   goToCart() {
     this.router.navigate(['/panier']);
   }
+   //public apiBase = 'http://127.0.0.1:8000/storage/'; 
+public apiBase = `${environment.baseUrl}/storage`;
+   // ou ton domaine réel
+getImageUrl(path: string): string {
+  if (!path) return 'assets/img/default.png';
+
+  // ⚡ On enlève un éventuel slash au début du path pour éviter // double
+  const cleanPath = path.startsWith('/') ? path.substring(1) : path;
+
+  return `${this.apiBase}/${cleanPath}`;
+}
 }

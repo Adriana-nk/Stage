@@ -58,8 +58,7 @@
   <div class="produits-grid">
     <div class="produit-card" *ngFor="let produit of filteredProduits">
       <div class="image-container">
-        <img [src]="produit.image_url" alt="{{ produit.nom }}" />
-
+  <img [src]="getImageUrl(produit.image_url)" alt="{{ produit.nom }}" />
         <!-- Bouton Favoris avec Font Awesome -->
         <button class="btn-fav" (click)="toggleFavorite(produit.id)">
           <i class="{{ isFavorite(produit.id) ? 'fas fa-heart' : 'far fa-heart' }}" style="color: red;"></i>

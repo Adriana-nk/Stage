@@ -32,9 +32,9 @@
       <div class="product-info">
         <h3 class="product-name">{{ item.product_name }}</h3>
         <p class="product-quantity">Quantité : {{ item.quantity }} {{ item.unit || '' }}</p>
-        <div class="product-price" *ngIf="item.price && item.price > 0">
-          <span class="price">{{ item.price }} FCFA</span>
-          <span class="price-unit">({{ item.price / item.quantity | number:'1.0-0' }} FCFA/{{ item.unit || 'unité' }})</span>
+        <div class="product-price" *ngIf="item.prix && item.prix > 0">
+          <span class="price">{{ item.prix }} FCFA</span>
+          <span class="price-unit">({{ item.prix / item.quantity | number:'1.0-0' }} FCFA/{{ item.unit || 'unité' }})</span>
         </div>
       </div>
 
@@ -53,13 +53,13 @@
   <ng-template #emptyCart>
     <p style="text-align: center; margin-top: 2rem;">Votre panier est vide.</p>
   </ng-template>
-
   <div class="checkout-section" *ngIf="cartItems.length > 0">
     <div class="total-line">
-      <h2>Total : {{ getTotalPrice() }} FCFA</h2>
-    </div>
+<h2>Total : {{ getTotalPrice() | number:'1.0-0' }} FCFA</h2>
+</div>
     <button class="pay-button" (click)="proceedToPayment()">Payer</button>
   </div>
+
 </ion-content>
 
 <app-acheteur-footer></app-acheteur-footer>

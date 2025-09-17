@@ -7,8 +7,8 @@ import {
   HttpErrorResponse,
   HttpResponse
 } from '@angular/common/http';
-import { Observable, throwError } from 'rxjs';
-import { tap, catchError, finalize } from 'rxjs/operators';
+import { Observable, throwError, from } from 'rxjs';
+import { tap, catchError, finalize, switchMap } from 'rxjs/operators';
 import { LoadingController, ToastController } from '@ionic/angular';
 import { LocalStorage } from '../../shared/helpers/localStorage';
 import { UserHelper } from '../../shared/helpers/user';
@@ -35,34 +35,35 @@ export class AppInterceptor implements HttpInterceptor {
     let loader: HTMLIonLoadingElement | null = null;
     let unauthorized = false;
 
-    // ⚡ Afficher le loader
-    this.loadingCtrl.create({ message: 'Chargement...', spinner: 'crescent', translucent: true })
-      .then(el => { loader = el; loader.present(); });
+    // ⚡ Créer le loader et attendre qu'il soit affiché
+    const loaderObs = from(
+      this.loadingCtrl.create({ message: 'Chargement...', spinner: 'crescent', translucent: true })
+        .then(l => { loader = l; return loader.present(); })
+    );
 
-    console.log('[HTTP Request]', authReq);
-
-    return next.handle(authReq).pipe(
-      tap(
-        (event) => {
-          if (event instanceof HttpResponse) {
-            console.log('[HTTP Response]', event);
-            if (!this.isExcludedUrl(authReq.url)) {
-              this.showToast('success', 'Opération réussie');
-            }
-          }
-        },
-        (error) => {
-          if (error instanceof HttpErrorResponse) {
-            console.error('[HTTP Error]', error);
-            unauthorized = error.status === 401;
+    return loaderObs.pipe(
+      switchMap(() => next.handle(authReq)),
+      tap(event => {
+        if (event instanceof HttpResponse) {
+          console.log('[HTTP Response]', event);
+          if (!this.isExcludedUrl(authReq.url)) {
+            this.showToast('success', 'Opération réussie');
           }
         }
-      ),
-      catchError((error: HttpErrorResponse) => this.handleHttpError(error)),
+      }),
+      catchError((error: HttpErrorResponse) => {
+        if (error instanceof HttpErrorResponse && error.status === 401) {
+          unauthorized = true;
+        }
+        return this.handleHttpError(error);
+      }),
       finalize(() => {
-        if (loader) loader.dismiss();
+        // ⚡ S'assurer que le loader est bien dismiss
+        if (loader) {
+          loader.dismiss().catch(() => console.warn('Loader déjà fermé'));
+        }
 
-        // ⚠️ Logout uniquement si la requête n'est pas exclue
+        // Logout si non-exclu et non-autorisé
         if (unauthorized && !this.isExcludedUrl(authReq.url)) {
           console.warn('[HTTP] Unauthorized - Logging out user');
           UserHelper.logoutUser();
@@ -77,8 +78,12 @@ export class AppInterceptor implements HttpInterceptor {
   }
 
   private showToast(type: ToastType, message: string, duration = 3000) {
-    this.toastCtrl.create({ message, color: type === 'success' ? 'success' : type === 'danger' ? 'danger' : 'dark', duration, position: 'top' })
-      .then(toast => toast.present());
+    this.toastCtrl.create({ 
+      message, 
+      color: type === 'success' ? 'success' : type === 'danger' ? 'danger' : 'dark', 
+      duration, 
+      position: 'top' 
+    }).then(toast => toast.present());
   }
 
   private handleHttpError(error: HttpErrorResponse): Observable<never> {

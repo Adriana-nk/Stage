@@ -24,31 +24,53 @@ export class PanierPage implements OnInit {
   ) {}
 
   ngOnInit() {
+    // Souscription pour mises à jour automatiques
+    this.panierService.panier$.subscribe(items => {
+      this.cartItems = items || [];
+      this.updateFilteredItems();
+    });
     this.loadCart();
   }
-
-  loadCart() {
-    this.panierService.getCart().subscribe({
-      next: (res: ResponseType<CartItem[]>) => {
-        if(res.code === 200 && Array.isArray(res.data)) {
-          this.cartItems = res.data;
-        } else {
-          this.cartItems = [];
-        }
-        this.updateFilteredItems();
-      },
-      error: async () => {
+loadCart() {
+  this.panierService.getCart().subscribe({
+    next: (res: ResponseType<CartItem[]>) => {
+      if (res.code === 200) {
+        this.cartItems = Array.isArray(res.data) ? res.data : [];
+      } else {
         this.cartItems = [];
-        this.updateFilteredItems();
-        const toast = await this.toastController.create({
-          message: 'Erreur lors du chargement du panier',
-          duration: 2000,
-          color: 'danger'
-        });
-        await toast.present();
       }
-    });
-  }
+
+      // Convertir price et quantity en nombres pour éviter les erreurs
+      this.cartItems = this.cartItems.map(item => {
+        const price = Number(item.prix ?? 0);
+        const quantity = Number(item.quantity ?? 0);
+
+        // Log pour debug chaque item
+        console.log(`Produit: ${item.product_name}, Price: ${price}, Quantity: ${quantity}`);
+
+        return {
+          ...item,
+          price,
+          quantity
+        };
+      });
+
+      console.log('Panier chargé:', this.cartItems);
+
+      this.updateFilteredItems();
+    },
+    error: async () => {
+      this.cartItems = [];
+      this.updateFilteredItems();
+      const toast = await this.toastController.create({
+        message: 'Erreur lors du chargement du panier',
+        duration: 2000,
+        color: 'danger'
+      });
+      await toast.present();
+    }
+  });
+}
 
   onSearchInput(event: any) {
     this.searchTerm = (event?.target?.value || '').toLowerCase().trim();
@@ -65,13 +87,17 @@ export class PanierPage implements OnInit {
   }
 
   private updateQuantity(item: CartItem, quantity: number) {
+    const index = this.cartItems.findIndex(i => i.product_id === item.product_id);
+    if (index !== -1) {
+      this.cartItems[index].quantity = quantity;
+      this.updateFilteredItems();
+    }
+
     this.panierService.updateQuantity(item.product_id, quantity).subscribe({
-      next: (res: ResponseType<CartItem[]>) => {
-        if(res.code === 200 && Array.isArray(res.data)) {
-          this.cartItems = res.data;
-          this.updateFilteredItems();
-        }
-      }
+      next: (res: ResponseType<any>) => {
+        if (res.code !== 200) this.loadCart();
+      },
+      error: () => this.loadCart()
     });
   }
 
@@ -88,13 +114,14 @@ export class PanierPage implements OnInit {
   }
 
   removeItem(item: CartItem) {
+    this.cartItems = this.cartItems.filter(i => i.product_id !== item.product_id);
+    this.updateFilteredItems();
+
     this.panierService.removeFromCart(item.product_id).subscribe({
-      next: (res: ResponseType<CartItem[]>) => {
-        if(res.code === 200 && Array.isArray(res.data)) {
-          this.cartItems = res.data;
-          this.updateFilteredItems();
-        }
-      }
+      next: (res: ResponseType<any>) => {
+        if (res.code !== 200) this.loadCart();
+      },
+      error: () => this.loadCart()
     });
   }
 
@@ -104,22 +131,32 @@ export class PanierPage implements OnInit {
       : [...this.cartItems];
   }
 
-  getTotalPrice(): number {
-    return this.cartItems.reduce((total, it) => total + (it.price || 0) * it.quantity, 0);
-  }
+  // Propriété calculée pour le total
+getTotalPrice(): number {
+  return this.cartItems.reduce((total, it) => {
+    return total + (Number(it.prix) || 0) * (Number(it.quantity) || 0);
+  }, 0);
+}
 
-  async proceedToPayment() {
-    if (this.cartItems.length === 0) return;
-    const alert = await this.alertController.create({
-      header: 'Procéder au paiement',
-      message: `Total : ${this.getTotalPrice()} FCFA`,
-      buttons: [
-        { text: 'Annuler', role: 'cancel' },
-        { text: 'Confirmer', handler: () => this.processPayment() }
-      ]
-    });
-    await alert.present();
-  }
+
+
+
+async proceedToPayment() {
+  if (this.cartItems.length === 0) return;
+
+  const totalFormatted = this.getTotalPrice().toLocaleString('fr-FR');
+  const alert = await this.alertController.create({
+    header: 'Procéder au paiement',
+    message: `Total : ${totalFormatted} FCFA`,
+    buttons: [
+      { text: 'Annuler', role: 'cancel' },
+      { text: 'Confirmer', handler: () => this.processPayment() }
+    ]
+  });
+  await alert.present();
+}
+
+
 
   private async processPayment() {
     const toast = await this.toastController.create({

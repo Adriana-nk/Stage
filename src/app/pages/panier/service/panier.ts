@@ -6,10 +6,12 @@ export interface CartItem {
   product_id: number;
   product_name: string;
   quantity: number;
-  price: number;
+  prix: number;
   unit?: string;
   image?: string;
+  product?: { price: number }; // ajout du product pour récupérer le prix
 }
+
 
 export interface ResponseType<T = any> {
   code: number;
